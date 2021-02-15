@@ -24,7 +24,7 @@ function markerSize(mag){
 }
 
 // create a function that gets colors for circle markers
-function getColors(d) {
+function colors(d) {
 if (d < 1){
   return "#B7DF5F"
 }
@@ -51,7 +51,7 @@ function createCircleMarker(feature, latlng ){
 // Change the values of these options to change the symbol's appearance
 var markerOptions = {
   radius: markerSize(feature.properties.mag),
-  fillColor: getColors(feature.properties.mag),
+  fillColor: colors(feature.properties.mag),
   color: "black",
   weight: 1,
   opacity: 1,
@@ -83,13 +83,13 @@ var legend = L.control({position: "bottomright" });
 legend.onAdd = function(){
   // create div for the legend
   var div = L.DomUtil.create('div', 'info legend'),
-      grades = [0, 1, 2, 3, 4, 5]
+      grades = [0,1,2,3,4,5]
       labels = [];
 
   // loop through our density intervals and generate a label with a colored square for each interval
   for (var i = 0; i < grades.length; i++) {
       div.innerHTML +=
-          '<i style="background:' + getColors(grades[i]) + '"></i> ' +
+          '<i style="background:' + colors(grades[i]) + '"></i> ' +
           grades[i] + (grades[i +1 ] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
   }
   return div;
