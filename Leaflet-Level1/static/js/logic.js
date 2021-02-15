@@ -16,7 +16,7 @@ accessToken: API_KEY
 
 
 // get the url for the earthquake data
-var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson" ;
+var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson" ;
 
 // create a function that changes marker size depending on the magnitute values
 function markerSize(mag){
@@ -61,7 +61,7 @@ return L.circleMarker( latlng, markerOptions );
 };
 
 // Use json request to fetch the data from a URL
-d3.json(queryUrl, function(data) {
+d3.json(url, function(data) {
 
 console.log(data)
 
