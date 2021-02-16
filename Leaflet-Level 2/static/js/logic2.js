@@ -56,7 +56,7 @@ function choosecolor(mag) {
         color = "lightgreen";
     }
     else {
-        color = "light yellow";
+        color = "lightyellow";
     }
     return color
 }
