@@ -35,20 +35,7 @@ var myMap = L.map("map", {
 
 lightLayer.addTo(myMap);
 
-var baseMaps = {
-    Satellite : satellite,
-    Grayscale : lightLayer,
-    Outdoors : outdoors 
-  }
 
-var tectonicplates = new L.LayerGroup();
-var earthquakes = new L.LayerGroup();
-  
-var overlayMaps = {
-    "Tectronic Plates": tectonicplates,
-    "Earthquakes": earthquakes
-  };
-L.control.layers(baseMaps, overlayMaps).addTo(myMap)  
 
 function choosecolor(mag) {
     var color = "";
@@ -69,7 +56,7 @@ function choosecolor(mag) {
         color = "lightgreen";
     }
     else {
-        color = "green";
+        color = "light yellow";
     }
     return color
 }
@@ -134,11 +121,11 @@ d3.json(plateUrl, function (data) {
 });
 
 
-var myMap = L.map("map", {
-    center: [14.7194, -92.4256],
-    zoom: 5,
-    layers: [outdoors, layers.Earthquakes, layers.Tectonic_Plates]
-});
+//var myMap = L.map("map", {
+  //  center: [14.7194, -92.4256],
+ //   zoom: 5,
+ //   layers: [outdoors, layers.Earthquakes, layers.Tectonic_Plates]
+//});
 
 var baseMaps = {
     Satellite: satellite,
