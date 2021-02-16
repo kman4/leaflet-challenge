@@ -51,7 +51,9 @@ var overlayMaps = {
 L.control.layers(baseMaps, overlayMaps).addTo(myMap)
 
 // get the url for the earthquake data
-var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson" ;
+var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson" ;
+var plateUrl = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
+
 
 // create a function that changes marker size depending on the magnitute values
 function markerSize(mag){
@@ -59,7 +61,7 @@ function markerSize(mag){
 }
 
 // create a function that gets colors for circle markers
-function getColors(d) {
+function colors(d) {
 if (d < 1){
   return "#B7DF5F"
 }
@@ -86,7 +88,7 @@ function createCircleMarker(feature, latlng ){
 // Change the values of these options to change the symbol's appearance
 var markerOptions = {
   radius: markerSize(feature.properties.mag),
-  fillColor: getColors(feature.properties.mag),
+  fillColor: colors(feature.properties.mag),
   color: "black",
   weight: 1,
   opacity: 1,
@@ -96,7 +98,7 @@ return L.circleMarker( latlng, markerOptions );
 };
 
 // Use json request to fetch the data from a URL
-d3.json(queryUl, function(data) {
+d3.json(url, function(data) {
 
 console.log(data)
 
@@ -113,6 +115,24 @@ earthquakes.forEach(function(result){
   }).bindPopup("Date: " + new Date(result.properties.time) + "<br>Place: " + result.properties.place + "<br>Magnitude: " + result.properties.mag).addTo(myMap)
 });
 
+// Use json request to fetch the data from a URL
+d3.json(plateUrl, function (data) {
+  //check data
+  console.log(data.features);
+
+  //    add geojson layer
+  L.geoJson(data.features, {
+      onEachFeature: onEachFeature,
+      pointToLayer: function (feature, latlng) {
+          return L.polyline(feature.geometry.coordinates, {
+              color: "orange",
+              weight: 5,
+              stroke: true
+          });
+      }
+  }).addTo(tectonicplates);
+});
+
 //create legennds and add to the map
 var legend = L.control({position: "bottomright" });
 legend.onAdd = function(){
@@ -124,7 +144,7 @@ legend.onAdd = function(){
   // loop through our density intervals and generate a label with a colored square for each interval
   for (var i = 0; i < grades.length; i++) {
       div.innerHTML +=
-          '<i style="background:' + getColors(grades[i]) + '"></i> ' +
+          '<i style="background:' + colors(grades[i]) + '"></i> ' +
           grades[i] + (grades[i +1 ] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
   }
   return div;
