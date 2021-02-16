@@ -137,7 +137,6 @@ d3.json(plateUrl, function (data) {
 var legend = L.control({ position: 'bottomright' });
 legend.onAdd = function (myMap) {
   // create div for the legend
-
     var div = L.DomUtil.create('div', 'info legend');
         grades = [0, 1, 2, 3, 4, 5];
         labels = [];
