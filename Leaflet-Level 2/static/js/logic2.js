@@ -35,42 +35,12 @@ var myMap = L.map("map", {
 
 lightLayer.addTo(myMap);
 
+var baseMaps = {
+    Satellite: satellite,
+    Grayscale: lightLayer,
+    Outdoors: outdoors,
+};
 
-
-function choosecolor(mag) {
-    var color = "";
-
-    if (mag >= 8.0) {
-        color = "darkred";
-    }
-    else if (mag >= 7.0) {
-        color = "red";
-    }
-    else if (mag >= 6.0) {
-        color = "orange";
-    }
-    else if (mag >= 5.0) {
-        color = "yellow";
-    }
-    else if (mag >= 4.0) {
-        color = "lightgreen";
-    }
-    else {
-        color = "lightyellow";
-    }
-    return color
-}
-
-function onEachFeature(feature, layer) {
-    layer.bindPopup("<h3>" + feature.properties.place +
-        "</h3><hr><h3>" + feature.properties.mag + " magnitude</h3><hr><p>"
-        + new Date(feature.properties.time) + "</p>")
-}
-
-
-// get the url for the earthquake data
-var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson" ;
-var plateUrl = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
 
 
 var layers = {
@@ -78,11 +48,51 @@ var layers = {
     Tectonic_Plates: new L.LayerGroup(),
 };
 
-
 var overlays = {
     "Earthquakes": layers.Earthquakes,
     "Tectonic Plates": layers.Tectonic_Plates,
 };
+
+
+
+L.control.layers(baseMaps, overlays, {collapsed: false}).addTo(myMap);
+
+// get the url for the earthquake data
+var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson" ;
+var plateUrl = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
+
+
+// create a function that changes marker size depending on the magnitute values
+function markerSize(mag){
+    return mag * 5
+  }
+  function colors(d) {
+    if (d < 1){
+      return "#B7DF5F"
+    }
+    else if ( d < 2){
+      return "#DCED11"
+    }
+    else if (d < 3){
+      return "#EDD911"
+    }
+    else if (d < 4){
+      return "#EDB411"
+    }
+    else if (d < 5 ){
+      return "#ED7211"
+    }
+    else {
+      return "#ED4311"
+    }
+};
+
+function onEachFeature(feature, layer) {
+    layer.bindPopup("<h3>" + feature.properties.place +
+        "</h3><hr><h3>" + feature.properties.mag + " magnitude</h3><hr><p>"
+        + new Date(feature.properties.time) + "</p>")
+}
+
 // Perform a GET request to the query URL
 d3.json(url, function (data) {
     //check data
@@ -93,9 +103,12 @@ d3.json(url, function (data) {
         onEachFeature: onEachFeature,
         pointToLayer: function (feature, latlng) {
             return L.circle([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
-                color: choosecolor(feature.properties.mag),
-                fillColor: choosecolor(feature.properties.mag),
-                fillOpacity: 0.75,
+                radius: markerSize(feature.properties.mag),
+                fillColor: colors(feature.properties.mag),
+                color: "black",                
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.8,
                 radius: (feature.properties.mag) * 20000
             });
         }
@@ -112,7 +125,7 @@ d3.json(plateUrl, function (data) {
         onEachFeature: onEachFeature,
         pointToLayer: function (feature, latlng) {
             return L.polyline(feature.geometry.coordinates, {
-                color: "orange",
+                color: "blue",
                 weight: 5,
                 stroke: true
             });
@@ -120,42 +133,21 @@ d3.json(plateUrl, function (data) {
     }).addTo(layers.Tectonic_Plates);
 });
 
-
-//var myMap = L.map("map", {
-  //  center: [14.7194, -92.4256],
- //   zoom: 5,
- //   layers: [outdoors, layers.Earthquakes, layers.Tectonic_Plates]
-//});
-
-var baseMaps = {
-    Satellite: satellite,
-    Light: lightLayer,
-    Outdoors: outdoors,
-};
-
-
-
-L.control.layers(baseMaps, overlays, {collapsed: false}).addTo(myMap);
-
+//create legennds and add to the map
 var legend = L.control({ position: 'bottomright' });
-
 legend.onAdd = function (myMap) {
+  // create div for the legend
 
     var div = L.DomUtil.create('div', 'info legend');
-    var grades = [2, 4, 5, 6, 7, 8];
-    var labels = ["Minor", "Light", "Moderate", "Strong", "Major", "Great"];
-
-    div.innerHTML = "<h4>Richter Scale</h4>";
-
+        grades = [0, 1, 2, 3, 4, 5];
+        labels = [];
 
     // loop through our density intervals and generate a label with a colored square for each interval
     for (var i = 0; i < grades.length; i++) {
         div.innerHTML +=
-            '<i style="background:' + choosecolor(grades[i]) + '"></i>' +
-            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+            '<i style="background:' + colors(grades[i]) + '"></i> ' +
+            grades[i] + (grades[i +1 ] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
     }
-
     return div;
 };
-
 legend.addTo(myMap);
