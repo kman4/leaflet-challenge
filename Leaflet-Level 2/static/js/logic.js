@@ -125,7 +125,7 @@ d3.json(plateUrl, function (data) {
         onEachFeature: onEachFeature,
         pointToLayer: function (feature, latlng) {
             return L.polyline(feature.geometry.coordinates, {
-                color: "black",
+                color: "blue",
                 weight: 5,
                 stroke: true
             });
