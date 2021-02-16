@@ -70,12 +70,14 @@ var earthquakes = data.features
 console.log(earthquakes)
 
 // loop through the data to create markers and popup
-earthquakes.forEach(function(result){
-  //console.log(result.properties)
-  L.geoJSON(result,{
+earthquakes.forEach(function(feature){
+  //console.log(feature.properties)
+  L.geoJSON(feature,{
     pointToLayer: createCircleMarker
     // add popups to the circle markers to display data
-  }).bindPopup("Date: " + new Date(result.properties.time) + "<br>Place: " + result.properties.place + "<br>Magnitude: " + result.properties.mag).addTo(myMap)
+  }).bindPopup("<h3>" + feature.properties.place +
+  "</h3><hr><h3>" + feature.properties.mag + " magnitude</h3><hr><p>"
+  + new Date(feature.properties.time) + "</p>").addTo(myMap)
 });
 
 //create legennds and add to the map
