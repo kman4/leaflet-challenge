@@ -66,7 +66,8 @@ var plateUrl = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/G
 function markerSize(mag){
     return mag * 5
   }
-  function colors(d) {
+  
+  function color(d) {
     if (d < 1){
       return "#B7DF5F"
     }
@@ -87,6 +88,8 @@ function markerSize(mag){
     }
 };
 
+
+
 function onEachFeature(feature, layer) {
     layer.bindPopup("<h3>" + feature.properties.place +
         "</h3><hr><h3>" + feature.properties.mag + " magnitude</h3><hr><p>"
@@ -104,7 +107,7 @@ d3.json(url, function (data) {
         pointToLayer: function (feature, latlng) {
             return L.circle([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
                 radius: markerSize(feature.properties.mag),
-                fillColor: colors(feature.properties.mag),
+                fillColor: color(feature.properties.mag),
                 color: "black",                
                 weight: 1,
                 opacity: 1,
@@ -114,6 +117,7 @@ d3.json(url, function (data) {
         }
     }).addTo(layers.Earthquakes);
 
+    legend.addTo(myMap);
 });
 
 d3.json(plateUrl, function (data) {
@@ -131,22 +135,23 @@ d3.json(plateUrl, function (data) {
             });
         }
     }).addTo(layers.Tectonic_Plates);
+
+   
 });
 
-//create legennds and add to the map
-var legend = L.control({ position: 'bottomright' });
-legend.onAdd = function (myMap) {
-  // create div for the legend
-    var div = L.DomUtil.create('div', 'info legend');
-        grades = [0, 1, 2, 3, 4, 5];
-        labels = [];
+    //create legennds and add to the map
+    var legend = L.control({position: "bottomright" });
+    legend.onAdd = function(){
+      // create div for the legend
+      var div = L.DomUtil.create('div', 'info legend'),
+          grades = [0,1,2,3,4,5]
+          labels = [];
 
-    // loop through our density intervals and generate a label with a colored square for each interval
-    for (var i = 0; i < grades.length; i++) {
-        div.innerHTML +=
-            '<i style="background:' + colors(grades[i]) + '"></i> ' +
-            grades[i] + (grades[i +1 ] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
-    }
-    return div;
+      // loop through our density intervals and generate a label with a colored square for each interval
+      for (var i = 0; i < grades.length; i++) {
+          div.innerHTML +=
+              '<i style="background:' + color(grades[i]) + '"></i> ' +
+              grades[i] + (grades[i +1 ] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+      }
+      return div;
 };
-legend.addTo(myMap);
